@@ -18,10 +18,11 @@ import { toast } from "@/components/ui/use-toast";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
+import { useRegister } from "@/hooks/useRegister";
 
 const FormSchema = z.object({
-	username: z.string().min(2, {
-		message: "Username must be at least 2 characters.",
+	name: z.string().min(2, {
+		message: "Name must be at least 2 characters.",
 	}),
 	email: z.string().min(3, {
 		message: "Email must be at least 3 characters.",
@@ -33,25 +34,33 @@ const FormSchema = z.object({
 
 export default function RegisterPage() {
 	const router = useRouter();
+	const { doRegistration, isLoading } = useRegister();
 
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-			username: "",
+			name: "",
 			email: "",
 			password: "",
 		},
 	});
 
-	function onSubmit(data: z.infer<typeof FormSchema>) {
+	async function onSubmit(data: z.infer<typeof FormSchema>) {
+		const { error } = await doRegistration(data);
+
+		if (error) {
+			return toast({
+				variant: "destructive",
+				title: "Registration failed",
+				description: error || "Something went wrong",
+			});
+		}
+
 		toast({
-			title: "You submitted the following values:",
-			description: (
-				<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-					<code className="text-white">{JSON.stringify(data, null, 2)}</code>
-				</pre>
-			),
+			title: "Registration successful",
+			description: "You can have access to the all features",
 		});
+		router.push("/");
 	}
 
 	return (
@@ -73,10 +82,10 @@ export default function RegisterPage() {
 					</div>
 					<FormField
 						control={form.control}
-						name="username"
+						name="name"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Username</FormLabel>
+								<FormLabel>Name</FormLabel>
 								<FormControl>
 									<Input placeholder="john doe" {...field} />
 								</FormControl>
@@ -106,7 +115,7 @@ export default function RegisterPage() {
 							<FormItem>
 								<FormLabel>Password</FormLabel>
 								<FormControl>
-									<Input placeholder="********" {...field} />
+									<Input type="password" placeholder="********" {...field} />
 								</FormControl>
 								<FormDescription>Provide easy and strong password</FormDescription>
 								<FormMessage />
@@ -119,7 +128,7 @@ export default function RegisterPage() {
 							Login now.
 						</Link>
 					</p>
-					<Button type="submit" className="mx-auto">
+					<Button disabled={isLoading} type="submit" className="mx-auto">
 						Registration
 					</Button>
 				</form>

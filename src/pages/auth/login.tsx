@@ -17,6 +17,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useLogin } from "@/hooks/useLogin";
 
 const FormSchema = z.object({
 	email: z.string().min(2, {
@@ -29,6 +30,7 @@ const FormSchema = z.object({
 
 export default function LoginPage() {
 	const router = useRouter();
+	const { doLogin, isLoading } = useLogin();
 
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
@@ -38,15 +40,28 @@ export default function LoginPage() {
 		},
 	});
 
-	function onSubmit(data: z.infer<typeof FormSchema>) {
-		toast({
-			title: "You submitted the following values:",
-			description: (
-				<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-					<code className="text-white">{JSON.stringify(data, null, 2)}</code>
-				</pre>
-			),
-		});
+	async function onSubmit(formData: z.infer<typeof FormSchema>) {
+		const { data, error } = await doLogin(formData);
+
+		if (data?.success && !error) {
+			toast({
+				title: "Login successful",
+				description: "You can have access to the all features",
+			});
+			router.push("/");
+		} else if (error) {
+			toast({
+				variant: "destructive",
+				title: "Login failed",
+				description: error || "Something went wrong",
+			});
+		} else {
+			toast({
+				variant: "destructive",
+				title: "Registration failed",
+				description: data?.message || "Something went wrong",
+			});
+		}
 	}
 
 	return (
@@ -86,7 +101,7 @@ export default function LoginPage() {
 							<FormItem>
 								<FormLabel>Password</FormLabel>
 								<FormControl>
-									<Input placeholder="********" {...field} />
+									<Input type="password" placeholder="********" {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -98,7 +113,7 @@ export default function LoginPage() {
 							Register now.
 						</Link>
 					</p>
-					<Button type="submit" className="mx-auto">
+					<Button disabled={isLoading} type="submit" className="mx-auto">
 						Login Now
 					</Button>
 				</form>
