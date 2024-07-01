@@ -1,0 +1,76 @@
+{
+	"buns": [
+		{
+			"_id": "1",
+			"name": "Cinnamon Roll",
+			"description": "A sweet roll with cinnamon filling, topped with icing.",
+			"price": 3.5,
+			"stock": 100,
+			"category": "Sweet Buns",
+			"image": "/bun.webp"
+		},
+		{
+			"_id": "2",
+			"name": "Sticky Bun",
+			"description": "A sweet bun topped with caramel and nuts.",
+			"price": 4.0,
+			"stock": 80,
+			"category": "Sweet Buns",
+			"image": "/bun-2.webp"
+		},
+		{
+			"_id": "3",
+			"name": "Burger Bun",
+			"description": "A soft and round bun, perfect for burgers.",
+			"price": 1.5,
+			"stock": 200,
+			"category": "Savory Buns",
+			"image": "/bun.webp"
+		},
+		{
+			"_id": "4",
+			"name": "Bao Bun",
+			"description": "A Chinese steamed bun filled with meats or vegetables.",
+			"price": 2.5,
+			"stock": 150,
+			"category": "Savory Buns",
+			"image": "/bun-2.webp"
+		},
+		{
+			"_id": "5",
+			"name": "Melonpan",
+			"description": "A Japanese sweet bun with a cookie crust.",
+			"price": 3.0,
+			"stock": 90,
+			"category": "Regional/Traditional Buns",
+			"image": "/bun.webp"
+		},
+		{
+			"_id": "6",
+			"name": "Anpan",
+			"description": "A Japanese sweet bun filled with red bean paste.",
+			"price": 3.0,
+			"stock": 100,
+			"category": "Regional/Traditional Buns",
+			"image": "/bun-2.webp"
+		},
+		{
+			"_id": "7",
+			"name": "Gluten-Free Bun",
+			"description": "A bun made with gluten-free ingredients.",
+			"price": 2.5,
+			"stock": 70,
+			"category": "Specialty Buns",
+			"image": "/bun-2.webp"
+		},
+		{
+			"_id": "8",
+			"name": "Vegan Bun",
+			"description": "A bun made without any animal products.",
+			"price": 2.5,
+			"stock": 100,
+			"category": "Specialty Buns",
+			"image": "/bun.webp"
+		}
+	]
+}

@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
-import { Search } from "lucide-react";
+import { Search, UserCog } from "lucide-react";
+import Cart from "./Cart";
 
 const formSchema = z.object({
 	search: z.string().min(1, {
@@ -36,10 +36,10 @@ export default function Navbar() {
 	}
 
 	return (
-		<nav className="flex justify-between px-5 py-3 bg-purple-100 fixed top-0 w-full">
+		<nav className="flex justify-between px-5 py-3 z-30 bg-purple-100 fixed top-0 w-full">
 			<div className="flex gap-3 items-center">
 				<Image src="/brand.png" alt="bun-shop" height={40} width={40} />
-				<Link href="/" className="font-semibold text-2xl">
+				<Link href="/" className="font-semibold text-2xl md:inline-flex hidden">
 					Bun Shop
 				</Link>
 				<Form {...form}>
@@ -65,8 +65,15 @@ export default function Navbar() {
 					</form>
 				</Form>
 			</div>
-			<div className="flex items-center">
-				<Link className="font-semibold" href="/auth/login">
+			<div className="flex items-center gap-4">
+				<Link href="/dashboard">
+					<UserCog className="hover:text-purple-700 transition-colors" />
+				</Link>
+				<Cart />
+				<Link
+					className="font-semibold hover:text-purple-700 transition-colors"
+					href="/auth/login"
+				>
 					Login
 				</Link>
 			</div>
