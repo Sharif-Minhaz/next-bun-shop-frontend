@@ -9,6 +9,8 @@ import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
 import { Search, UserCog } from "lucide-react";
 import Cart from "./Cart";
+import ProfileButton from "./ProfileButton";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 const formSchema = z.object({
 	search: z.string().min(1, {
@@ -17,6 +19,8 @@ const formSchema = z.object({
 });
 
 export default function Navbar() {
+	const { user, isAdmin } = useGlobalContext();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -66,16 +70,32 @@ export default function Navbar() {
 				</Form>
 			</div>
 			<div className="flex items-center gap-4">
-				<Link href="/dashboard">
-					<UserCog className="hover:text-purple-700 transition-colors" />
-				</Link>
-				<Cart />
-				<Link
-					className="font-semibold hover:text-purple-700 transition-colors"
-					href="/auth/login"
-				>
-					Login
-				</Link>
+				{user ? (
+					<>
+						{isAdmin() && (
+							<Link href="/dashboard">
+								<UserCog className="hover:text-purple-700 transition-colors" />
+							</Link>
+						)}
+						<Cart />
+						<ProfileButton user={user}>
+							<Image
+								width={40}
+								height={40}
+								src="https://randomuser.me/api/portraits/lego/7.jpg"
+								alt=""
+								className="rounded-full"
+							/>
+						</ProfileButton>
+					</>
+				) : (
+					<Link
+						className="font-semibold hover:text-purple-700 transition-colors"
+						href="/auth/login"
+					>
+						Login
+					</Link>
+				)}
 			</div>
 		</nav>
 	);

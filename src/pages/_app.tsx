@@ -17,10 +17,14 @@ export default function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 	// Use the layout defined at the page level, if available
 	const getLayout = Component.getLayout ?? ((page) => page);
 
-	return getLayout(
+	return (
 		<GlobalProvider>
-			<Component {...pageProps} />
-			<Toaster />
+			{getLayout(
+				<>
+					<Component {...pageProps} />
+					<Toaster />
+				</>
+			)}
 		</GlobalProvider>
 	);
 }

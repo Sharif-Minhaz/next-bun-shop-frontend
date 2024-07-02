@@ -65,14 +65,14 @@ export default function LoginPage() {
 	}
 
 	return (
-		<section>
+		<section className="h-screen grid place-content-center">
 			<Head>
 				<title>Next Bun Shop | Login</title>
 			</Head>
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
-					className="sm:w-[400px] w-[320px] space-y-6 mx-auto mt-6 border shadow-md rounded-md p-4"
+					className="sm:w-[400px] w-[320px] space-y-6 mx-auto border shadow-md rounded-md p-4"
 				>
 					<div
 						className="items-center gap-3 inline-flex cursor-pointer"
