@@ -11,18 +11,18 @@ const CategoryForm = () => {
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const info = await addData(categoryName);
-		if (info.success) {
+		const { res, error } = await addData(categoryName);
+		if (res?.data?.success) {
 			toast({
 				title: "Category added successfully",
 				description: "View category on the above.",
 			});
 			setCategoryName("");
 			refetch();
-		} else {
+		} else if (error) {
 			toast({
 				variant: "destructive",
-				title: "Category added failure",
+				title: error,
 				description: "Something went wrong",
 			});
 		}

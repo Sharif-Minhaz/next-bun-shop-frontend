@@ -26,19 +26,21 @@ export function useCategories() {
 
 	const addData = async (name: string) => {
 		setLoading(true);
+		let res, error;
 		try {
-			const res = await fetcher.post("/category/add", { category_name: name });
-
-			return res?.data;
+			res = await fetcher.post("/category/add", { category_name: name });
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
 				setError(err.response?.data?.message);
+				error = err.response?.data?.message;
 			} else {
 				setData(err.message);
 			}
 		} finally {
 			setLoading(false);
 		}
+
+		return { res, error };
 	};
 
 	useEffect(() => {
