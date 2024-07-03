@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import "../styles/globals.css";
 import GlobalProvider from "@/contexts/GlobalContext";
 import { Toaster } from "@/components/ui/toaster";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -19,12 +20,14 @@ export default function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
 	return (
 		<GlobalProvider>
-			{getLayout(
-				<>
-					<Component {...pageProps} />
-					<Toaster />
-				</>
-			)}
+			<EdgeStoreProvider>
+				{getLayout(
+					<>
+						<Component {...pageProps} />
+						<Toaster />
+					</>
+				)}
+			</EdgeStoreProvider>
 		</GlobalProvider>
 	);
 }

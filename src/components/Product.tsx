@@ -7,12 +7,12 @@ import UpdateProductModal from "./UpdateProductModal";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 
 interface IBunData {
-	_id: string;
+	id: string;
 	name: string;
 	description: string;
 	price: number;
 	stock: number;
-	category: string;
+	category_id: number;
 	image: string;
 }
 
@@ -42,23 +42,25 @@ export default function Product({ data }: { data: IBunData }) {
 				</div>
 			)}
 
-			<div className="p-6 bg-background">
-				<div className="flex items-start justify-between">
-					<div className="grid gap-2">
-						<h3 className="text-xl font-bold">{data.name}</h3>
-						<p className="text-muted-foreground">{data.description}</p>
+			<div className="p-6 bg-background flex flex-col content-between">
+				<div>
+					<div className="flex items-start gap-4 justify-between">
+						<div className="grid gap-2">
+							<h3 className="text-xl font-bold">{data.name}</h3>
+						</div>
+						<div className="text-2xl font-bold whitespace-nowrap">
+							<span className="pr-1">৳</span>
+							{data.price}
+						</div>
 					</div>
-					<div className="text-2xl font-bold whitespace-nowrap">
-						<span className="pr-1">৳</span>
-						{data.price}
-					</div>
+					<p className="text-muted-foreground mt-3">{data.description}</p>
 				</div>
 				<div className="mt-4 flex items-center justify-between">
 					<div className="flex items-center gap-2 text-sm text-muted-foreground">
 						<CuboidIcon className="w-4 h-4" />
 						<span>In Stock</span>
 					</div>
-					<Link href={`/product/${data._id}`}>
+					<Link href={`/product/${data.id}`}>
 						<Button size="sm">Add to Cart</Button>
 					</Link>
 				</div>

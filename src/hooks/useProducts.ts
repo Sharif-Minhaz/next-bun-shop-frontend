@@ -2,7 +2,17 @@ import { fetcher } from "@/helpers/axios";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 
-export function useCategories() {
+export interface IProduct {
+	id?: string;
+	name: string; //
+	description: string; //
+	price: number;
+	stock: number;
+	category: string; // convert to number rename to category_name
+	image: string;
+}
+
+export function useProducts() {
 	const [data, setData] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
@@ -10,7 +20,7 @@ export function useCategories() {
 	const fetchData = async () => {
 		setLoading(true);
 		try {
-			const res = await fetcher.get("/category");
+			const res = await fetcher.get("/product");
 			setData(res.data?.data);
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
@@ -23,11 +33,14 @@ export function useCategories() {
 		}
 	};
 
-	const addData = async (name: string) => {
+	const addData = async (formData: IProduct) => {
 		setLoading(true);
 		let res, error;
 		try {
-			res = await fetcher.post("/category/add", { category_name: name });
+			res = await fetcher.post("/product/add", {
+				...formData,
+				category: Number(formData.category),
+			});
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
 				setError(err.response?.data?.message);

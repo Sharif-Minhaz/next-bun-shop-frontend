@@ -1,17 +1,19 @@
 import Image from "next/image";
 import React, { useEffect } from "react";
-import { Accept, useDropzone } from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 
 interface FileWithPreview extends File {
 	preview: string;
 }
 
-interface Props extends React.ComponentProps<"label"> {
-	file?: FileWithPreview | null;
-	setFile: React.Dispatch<React.SetStateAction<FileWithPreview | null>>;
+interface Props {
+	onChange: (...event: any[]) => void;
+	value: any;
 }
 
-export const SelectImage = ({ file, setFile, ...props }: Props) => {
+export const SelectImage = ({ onChange, value }: Props) => {
+	const file = value as FileWithPreview | null;
+
 	const onDrop = (acceptedFiles: File[]) => {
 		const acceptedFile = acceptedFiles[0];
 		if (acceptedFile) {
@@ -19,7 +21,7 @@ export const SelectImage = ({ file, setFile, ...props }: Props) => {
 				preview: URL.createObjectURL(acceptedFile),
 			}) as FileWithPreview;
 
-			setFile(fileWithPreview);
+			onChange(fileWithPreview);
 		}
 	};
 
@@ -43,14 +45,16 @@ export const SelectImage = ({ file, setFile, ...props }: Props) => {
 			<label
 				// htmlFor="image-upload"
 				className="input-items flex items-center justify-between cursor-pointer"
-				{...props}
 				{...getRootProps()}
 			>
-				<span
-					title={file?.name || "Click to upload"}
-					className="w-[230px] overflow-hidden text-ellipsis"
-				>
-					{file?.name || "Upload an image"}
+				<span title={"Click to upload"} className="w-[230px] whitespace-nowrap">
+					{(file?.name &&
+						(file.name.length < 30
+							? file.name
+							: `${file?.name.substring(0, 14)}.....${file?.name.substring(
+									file?.name.length - 16
+							  )}`)) ||
+						"Upload an image"}
 				</span>
 				{file ? (
 					<Image

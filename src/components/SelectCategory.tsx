@@ -19,16 +19,21 @@ export function SelectCategory({
 	value,
 	onChange,
 	categories,
+	disabled,
 }: {
 	value: string;
 	onChange: (...event: any[]) => void;
-	categories: string[];
+	categories: { id: number; category_name: string }[];
+	disabled: boolean;
 }) {
 	const [open, setOpen] = React.useState(false);
 
 	const transformedCategoryData = categories.map((category) => ({
-		value: category.toLowerCase(),
-		label: category.replace(category.charAt(0), category.charAt(0).toUpperCase()),
+		value: category?.id.toString(),
+		label: category?.category_name.replace(
+			category.category_name?.charAt(0),
+			category.category_name?.charAt(0).toUpperCase()
+		),
 	}));
 
 	return (
@@ -57,6 +62,7 @@ export function SelectCategory({
 								<CommandItem
 									key={framework.value}
 									value={framework.value}
+									disabled={disabled}
 									onSelect={(e) => {
 										onChange(e);
 										setOpen(false);

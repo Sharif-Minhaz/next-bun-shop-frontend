@@ -13,13 +13,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import Image from "next/image";
-import Link from "next/link";
 import { SelectCategory } from "./SelectCategory";
-import data from "@/data/product.json";
 import { Textarea } from "./ui/textarea";
 import { SelectImage } from "./SelectImage";
-import { useState } from "react";
+import { useCategories } from "@/hooks/useCategories";
+import { useEdgeStore } from "@/lib/edgestore";
+import { useProducts } from "@/hooks/useProducts";
 
 const FormSchema = z.object({
 	name: z.string().min(2, {
@@ -33,19 +32,13 @@ const FormSchema = z.object({
 	category: z.string().min(1, {
 		message: "Category is required.",
 	}),
-	image: z.string().url("Image url required").min(1, {
-		message: "Image is required",
-	}),
+	image: z.instanceof(File).refine((file) => file && file.size > 0, "Image is required"),
 });
 
-interface FileWithPreview extends File {
-	preview: string;
-}
-
 export default function ProductForm() {
-	const [file, setFile] = useState<FileWithPreview | null>(null);
-	const allCategories = data.buns.map((bun) => bun.category);
-	const categories = new Set([...allCategories]);
+	const { edgestore } = useEdgeStore();
+	const { data } = useCategories();
+	const { loading, addData } = useProducts();
 
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
@@ -55,19 +48,27 @@ export default function ProductForm() {
 			price: 0,
 			stock: 0,
 			category: "",
+			image: undefined,
 		},
 	});
 
-	function onSubmit(data: z.infer<typeof FormSchema>) {
-		console.log(data);
-		toast({
-			title: "You submitted the following values:",
-			description: (
-				<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-					<code className="text-white">{JSON.stringify(data, null, 2)}</code>
-				</pre>
-			),
+	async function onSubmit(data: z.infer<typeof FormSchema>) {
+		const response = await edgestore.publicFiles.upload({
+			file: data.image,
 		});
+
+		const { res, error } = await addData({ ...data, image: response?.url });
+
+		if (error) {
+			toast({ variant: "destructive", title: error, description: "Something went wrong" });
+		} else if (res?.data?.success) {
+			toast({
+				title: "Product added successfully",
+				description: "View all products in the home page",
+			});
+
+			form.reset();
+		}
 	}
 
 	return (
@@ -86,7 +87,11 @@ export default function ProductForm() {
 								<FormItem>
 									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Input placeholder="demo bun" {...field} />
+										<Input
+											disabled={loading}
+											placeholder="demo bun"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -99,7 +104,12 @@ export default function ProductForm() {
 								<FormItem>
 									<FormLabel>Bun Price</FormLabel>
 									<FormControl>
-										<Input type="number" placeholder="bun price" {...field} />
+										<Input
+											disabled={loading}
+											type="number"
+											placeholder="bun price"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -116,6 +126,7 @@ export default function ProductForm() {
 									<FormControl>
 										<Input
 											type="number"
+											disabled={loading}
 											placeholder="bun stock amount"
 											{...field}
 										/>
@@ -134,8 +145,9 @@ export default function ProductForm() {
 									<FormControl>
 										<SelectCategory
 											value={field.value}
+											disabled={loading}
 											onChange={field.onChange}
-											categories={Array.from(categories)}
+											categories={data}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -152,7 +164,11 @@ export default function ProductForm() {
 								<FormItem>
 									<FormLabel>Bun Description</FormLabel>
 									<FormControl>
-										<Textarea placeholder="bun description" {...field} />
+										<Textarea
+											disabled={loading}
+											placeholder="bun description"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -165,7 +181,10 @@ export default function ProductForm() {
 								<FormItem className="flex flex-col gap-1 mt-1">
 									<FormLabel>Bun Image</FormLabel>
 									<FormControl>
-										<SelectImage file={file} setFile={setFile} />
+										<SelectImage
+											onChange={field.onChange}
+											value={field.value}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -173,7 +192,7 @@ export default function ProductForm() {
 						/>
 					</div>
 
-					<Button type="submit" className="mx-auto">
+					<Button disabled={loading} type="submit" className="mx-auto">
 						Add Product
 					</Button>
 				</form>

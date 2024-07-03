@@ -9,7 +9,7 @@ export default function FilterList({
 	loading,
 	categories,
 }: {
-	loading: boolean;
+	loading?: boolean;
 	categories: ICategory[];
 }) {
 	return (
