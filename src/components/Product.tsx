@@ -3,9 +3,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { Edit, Trash2 } from "lucide-react";
-import { toast } from "./ui/use-toast";
-import { useState } from "react";
 import UpdateProductModal from "./UpdateProductModal";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 interface IBunData {
 	_id: string;
@@ -18,7 +17,7 @@ interface IBunData {
 }
 
 export default function Product({ data }: { data: IBunData }) {
-	const [open, setOpen] = useState(false);
+	const { isAdmin } = useGlobalContext();
 
 	return (
 		<Card className="w-full relative mx-auto max-w-md overflow-hidden rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl">
@@ -29,16 +28,20 @@ export default function Product({ data }: { data: IBunData }) {
 				height={400}
 				className="w-full h-64 object-cover"
 			/>
-			<div className="absolute top-2 right-2 bg-slate-100 rounded-xl p-2 flex flex-col gap-2">
-				<span className="cursor-pointer" onClick={() => alert("Delete card")}>
-					<Trash2 className="text-red-500" size={18} />
-				</span>
-				<span className="cursor-pointer">
-					<UpdateProductModal>
-						<Edit className="text-purple-500" size={18} />
-					</UpdateProductModal>
-				</span>
-			</div>
+
+			{isAdmin() && (
+				<div className="absolute top-2 right-2 bg-slate-100 rounded-xl p-2 flex flex-col gap-2">
+					<span className="cursor-pointer" onClick={() => alert("Delete card")}>
+						<Trash2 className="text-red-500" size={18} />
+					</span>
+					<span className="cursor-pointer">
+						<UpdateProductModal>
+							<Edit className="text-purple-500" size={18} />
+						</UpdateProductModal>
+					</span>
+				</div>
+			)}
+
 			<div className="p-6 bg-background">
 				<div className="flex items-start justify-between">
 					<div className="grid gap-2">
