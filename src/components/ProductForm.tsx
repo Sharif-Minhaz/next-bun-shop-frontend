@@ -38,7 +38,7 @@ const FormSchema = z.object({
 export default function ProductForm() {
 	const { edgestore } = useEdgeStore();
 	const { data } = useCategories();
-	const { loading, addData } = useProducts();
+	const { addData } = useProducts();
 
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
@@ -88,7 +88,7 @@ export default function ProductForm() {
 									<FormLabel>Name</FormLabel>
 									<FormControl>
 										<Input
-											disabled={loading}
+											disabled={form.formState?.isSubmitting}
 											placeholder="demo bun"
 											{...field}
 										/>
@@ -105,7 +105,7 @@ export default function ProductForm() {
 									<FormLabel>Bun Price</FormLabel>
 									<FormControl>
 										<Input
-											disabled={loading}
+											disabled={form.formState?.isSubmitting}
 											type="number"
 											placeholder="bun price"
 											{...field}
@@ -126,7 +126,7 @@ export default function ProductForm() {
 									<FormControl>
 										<Input
 											type="number"
-											disabled={loading}
+											disabled={form.formState?.isSubmitting}
 											placeholder="bun stock amount"
 											{...field}
 										/>
@@ -145,7 +145,7 @@ export default function ProductForm() {
 									<FormControl>
 										<SelectCategory
 											value={field.value}
-											disabled={loading}
+											isSubmitting={form.formState?.isSubmitting}
 											onChange={field.onChange}
 											categories={data}
 										/>
@@ -165,7 +165,7 @@ export default function ProductForm() {
 									<FormLabel>Bun Description</FormLabel>
 									<FormControl>
 										<Textarea
-											disabled={loading}
+											disabled={form.formState?.isSubmitting}
 											placeholder="bun description"
 											{...field}
 										/>
@@ -192,7 +192,11 @@ export default function ProductForm() {
 						/>
 					</div>
 
-					<Button disabled={loading} type="submit" className="mx-auto">
+					<Button
+						disabled={form.formState?.isSubmitting}
+						type="submit"
+						className="mx-auto"
+					>
 						Add Product
 					</Button>
 				</form>

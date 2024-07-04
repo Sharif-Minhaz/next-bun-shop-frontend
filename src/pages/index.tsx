@@ -22,7 +22,9 @@ export const getStaticProps = (async (context) => {
 		fetcher("/category"),
 		fetcher("/product"),
 	]);
-	return { props: { categories: resCategory.data?.data, products: resProduct.data?.data } };
+	return {
+		props: { categories: resCategory.data?.data, products: resProduct.data?.data },
+	};
 }) satisfies GetStaticProps<{
 	categories: ICategory[];
 	products: IProduct[];

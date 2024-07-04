@@ -1,4 +1,5 @@
 import { fetcher } from "@/helpers/axios";
+import { useEdgeStore } from "@/lib/edgestore";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 
@@ -16,6 +17,7 @@ export function useProducts() {
 	const [data, setData] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+	const { edgestore } = useEdgeStore();
 
 	const fetchData = async () => {
 		setLoading(true);
@@ -55,11 +57,34 @@ export function useProducts() {
 		return { res, error };
 	};
 
+	const deleteData = async (id: string) => {
+		setLoading(true);
+		let res, error;
+
+		try {
+			res = await fetcher.delete(`/product/${id}`);
+			await edgestore.publicFiles.delete({
+				url: res.data?.data?.image,
+			});
+		} catch (err: any) {
+			if (err instanceof AxiosError) {
+				setError(err.response?.data?.message);
+				error = err.response?.data?.message;
+			} else {
+				setData(err.message);
+			}
+		} finally {
+			setLoading(false);
+		}
+
+		return { res, error };
+	};
+
 	useEffect(() => {
 		fetchData();
 	}, []);
 
 	const refetch = () => fetchData();
 
-	return { data, error, loading, refetch, addData };
+	return { data, error, loading, refetch, addData, deleteData };
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Edit, Trash2 } from "lucide-react";
 import UpdateProductModal from "./UpdateProductModal";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import DeleteConfirmation from "./DeleteConfirmation";
 
 interface IBunData {
 	id: string;
@@ -31,8 +32,10 @@ export default function Product({ data }: { data: IBunData }) {
 
 			{isAdmin() && (
 				<div className="absolute top-2 right-2 bg-slate-100 rounded-xl p-2 flex flex-col gap-2">
-					<span className="cursor-pointer" onClick={() => alert("Delete card")}>
-						<Trash2 className="text-red-500" size={18} />
+					<span className="cursor-pointer">
+						<DeleteConfirmation productId={data.id}>
+							<Trash2 className="text-red-500" size={18} />
+						</DeleteConfirmation>
 					</span>
 					<span className="cursor-pointer">
 						<UpdateProductModal>
@@ -42,7 +45,7 @@ export default function Product({ data }: { data: IBunData }) {
 				</div>
 			)}
 
-			<div className="p-6 bg-background flex flex-col content-between">
+			<div className="p-6 bg-background min-h-[250px] flex flex-col content-between">
 				<div>
 					<div className="flex items-start gap-4 justify-between">
 						<div className="grid gap-2">
@@ -55,14 +58,16 @@ export default function Product({ data }: { data: IBunData }) {
 					</div>
 					<p className="text-muted-foreground mt-3">{data.description}</p>
 				</div>
-				<div className="mt-4 flex items-center justify-between">
-					<div className="flex items-center gap-2 text-sm text-muted-foreground">
-						<CuboidIcon className="w-4 h-4" />
-						<span>In Stock</span>
+				<div className="mt-auto">
+					<div className="flex mt-4 items-center justify-between">
+						<div className="flex items-center gap-2 text-sm text-muted-foreground">
+							<CuboidIcon className="w-4 h-4" />
+							<span>In Stock</span>
+						</div>
+						<Link href={`/product/${data.id}`}>
+							<Button size="sm">Add to Cart</Button>
+						</Link>
 					</div>
-					<Link href={`/product/${data.id}`}>
-						<Button size="sm">Add to Cart</Button>
-					</Link>
 				</div>
 			</div>
 		</Card>

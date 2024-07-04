@@ -19,12 +19,12 @@ export function SelectCategory({
 	value,
 	onChange,
 	categories,
-	disabled,
+	isSubmitting,
 }: {
 	value: string;
 	onChange: (...event: any[]) => void;
 	categories: { id: number; category_name: string }[];
-	disabled: boolean;
+	isSubmitting: boolean;
 }) {
 	const [open, setOpen] = React.useState(false);
 
@@ -40,6 +40,7 @@ export function SelectCategory({
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
 				<Button
+					disabled={isSubmitting}
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
@@ -62,7 +63,7 @@ export function SelectCategory({
 								<CommandItem
 									key={framework.value}
 									value={framework.value}
-									disabled={disabled}
+									disabled={isSubmitting}
 									onSelect={(e) => {
 										onChange(e);
 										setOpen(false);
