@@ -35,7 +35,7 @@ const FormSchema = z.object({
 	image: z.instanceof(File).refine((file) => file && file.size > 0, "Image is required"),
 });
 
-export default function ProductForm() {
+export default function ProductForm({ update }: { update?: boolean }) {
 	const { edgestore } = useEdgeStore();
 	const { data } = useCategories();
 	const { addData } = useProducts();
@@ -73,13 +73,15 @@ export default function ProductForm() {
 
 	return (
 		<section>
-			<h1 className="mt-4 mb-3 text-[20px] px-5 py-3">Add New Product</h1>
+			<h1 className="mt-4 mb-3 text-[20px] px-5 py-3">
+				{update ? "Update data" : "Add New Product"}
+			</h1>
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
 					className="space-y-6 mx-auto px-5 pb-5"
 				>
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div className={`${!update ? "sm:grid-cols-2" : ""} grid grid-cols-1 gap-4`}>
 						<FormField
 							control={form.control}
 							name="name"
@@ -116,7 +118,7 @@ export default function ProductForm() {
 							)}
 						/>
 					</div>
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div className={`${!update ? "sm:grid-cols-2" : ""} grid grid-cols-1 gap-4`}>
 						<FormField
 							control={form.control}
 							name="stock"
@@ -156,7 +158,7 @@ export default function ProductForm() {
 						/>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div className={`${!update ? "sm:grid-cols-2" : ""} grid grid-cols-1 gap-4`}>
 						<FormField
 							control={form.control}
 							name="description"
@@ -197,7 +199,7 @@ export default function ProductForm() {
 						type="submit"
 						className="mx-auto"
 					>
-						Add Product
+						{update ? "Update product" : "Add Product"}
 					</Button>
 				</form>
 			</Form>
