@@ -59,7 +59,7 @@ export const SelectImage = ({ onChange, value }: Props) => {
 				{file ? (
 					<Image
 						alt="upload"
-						src={file.preview}
+						src={file.preview || value}
 						width={50}
 						height={50}
 						className="rounded-xl"

@@ -57,6 +57,29 @@ export function useProducts() {
 		return { res, error };
 	};
 
+	const updateData = async (productId: string, formData: IProduct) => {
+		setLoading(true);
+		console.log(productId, formData);
+		let res, error;
+		try {
+			res = await fetcher.patch(`/product/update/${productId}`, {
+				...formData,
+				category: Number(formData.category),
+			});
+		} catch (err: any) {
+			if (err instanceof AxiosError) {
+				setError(err.response?.data?.message);
+				error = err.response?.data?.message;
+			} else {
+				setData(err.message);
+			}
+		} finally {
+			setLoading(false);
+		}
+
+		return { res, error };
+	};
+
 	const deleteData = async (id: string) => {
 		setLoading(true);
 		let res, error;
@@ -86,5 +109,5 @@ export function useProducts() {
 
 	const refetch = () => fetchData();
 
-	return { data, error, loading, refetch, addData, deleteData };
+	return { data, error, loading, refetch, addData, updateData, deleteData };
 }

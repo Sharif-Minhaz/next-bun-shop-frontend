@@ -19,6 +19,8 @@ import { SelectImage } from "./SelectImage";
 import { useCategories } from "@/hooks/useCategories";
 import { useEdgeStore } from "@/lib/edgestore";
 import { useProducts } from "@/hooks/useProducts";
+import { DialogClose } from "./ui/dialog";
+import { useRouter } from "next/router";
 
 const FormSchema = z.object({
 	name: z.string().min(2, {
@@ -32,42 +34,113 @@ const FormSchema = z.object({
 	category: z.string().min(1, {
 		message: "Category is required.",
 	}),
-	image: z.instanceof(File).refine((file) => file && file.size > 0, "Image is required"),
+	image: z.union([
+		z.instanceof(File).refine((file) => file && file.size > 0, {
+			message: "Image file is required and cannot be empty",
+		}),
+		z.string().url({ message: "Image URL must be a valid URL" }),
+	]),
 });
 
-export default function ProductForm({ update }: { update?: boolean }) {
+interface IDefaultData {
+	id: string;
+	name: string;
+	description: string;
+	price: number;
+	stock: number;
+	category: string;
+	image: any;
+}
+
+export default function ProductForm({
+	initialData,
+	update,
+}: {
+	initialData?: IDefaultData;
+	update?: boolean;
+}) {
 	const { edgestore } = useEdgeStore();
 	const { data } = useCategories();
-	const { addData } = useProducts();
+	const { addData, updateData } = useProducts();
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-			name: "",
-			description: "",
-			price: 0,
-			stock: 0,
-			category: "",
-			image: undefined,
+			name: initialData?.name || "",
+			description: initialData?.description || "",
+			price: initialData?.price || 0,
+			stock: initialData?.stock || 0,
+			category: initialData?.category || "",
+			image: initialData?.image || undefined,
 		},
 	});
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		const response = await edgestore.publicFiles.upload({
-			file: data.image,
-		});
+		if (update) {
+			let response: { url: string } = { url: "" };
+			if (!initialData?.id) {
+				return toast({
+					variant: "destructive",
+					title: "Product id not found",
+				});
+			}
 
-		const { res, error } = await addData({ ...data, image: response?.url });
+			if (data.image instanceof File) {
+				response = await edgestore.publicFiles.upload({
+					file: data.image,
+					options: {
+						replaceTargetUrl: initialData?.image,
+					},
+				});
+			} else {
+				response = { url: initialData?.image };
+			}
 
-		if (error) {
-			toast({ variant: "destructive", title: error, description: "Something went wrong" });
-		} else if (res?.data?.success) {
-			toast({
-				title: "Product added successfully",
-				description: "View all products in the home page",
+			const { res, error } = await updateData(initialData.id, {
+				...data,
+				image: response?.url,
 			});
 
-			form.reset();
+			if (error) {
+				toast({
+					variant: "destructive",
+					title: error,
+					description: "Something went wrong",
+				});
+			} else if (res?.data?.success) {
+				toast({
+					title: "Product updated successfully",
+				});
+				router.replace(router.asPath);
+			}
+		} else {
+			let response: { url: string } = { url: "" };
+
+			if (data.image instanceof File) {
+				response = await edgestore.publicFiles.upload({
+					file: data.image,
+				});
+			} else {
+				response = { url: data.image };
+			}
+
+			const { res, error } = await addData({ ...data, image: response?.url });
+
+			if (error) {
+				toast({
+					variant: "destructive",
+					title: error,
+					description: "Something went wrong",
+				});
+			} else if (res?.data?.success) {
+				toast({
+					title: "Product added successfully",
+					description: "View all products in the home page",
+				});
+
+				form.reset();
+			}
 		}
 	}
 
@@ -194,13 +267,25 @@ export default function ProductForm({ update }: { update?: boolean }) {
 						/>
 					</div>
 
-					<Button
-						disabled={form.formState?.isSubmitting}
-						type="submit"
-						className="mx-auto"
-					>
-						{update ? "Update product" : "Add Product"}
-					</Button>
+					{update ? (
+						<DialogClose asChild>
+							<Button
+								disabled={form.formState?.isSubmitting}
+								type="submit"
+								className="mx-auto"
+							>
+								Update product
+							</Button>
+						</DialogClose>
+					) : (
+						<Button
+							disabled={form.formState?.isSubmitting}
+							type="submit"
+							className="mx-auto"
+						>
+							Add Product
+						</Button>
+					)}
 				</form>
 			</Form>
 		</section>

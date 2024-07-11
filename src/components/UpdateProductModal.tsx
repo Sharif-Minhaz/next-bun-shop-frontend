@@ -8,8 +8,15 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "./ui/dialog";
+import { IBunData } from "./Product";
 
-export default function UpdateProductModal({ children }: { children: ReactElement }) {
+export default function UpdateProductModal({
+	initialData,
+	children,
+}: {
+	initialData: IBunData;
+	children: ReactElement;
+}) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>{children}</DialogTrigger>
@@ -21,7 +28,13 @@ export default function UpdateProductModal({ children }: { children: ReactElemen
 					</DialogDescription>
 				</DialogHeader>
 				<div className="-mt-4">
-					<ProductForm update />
+					<ProductForm
+						initialData={{
+							...initialData,
+							category: initialData.category_id.toString(),
+						}}
+						update
+					/>
 				</div>
 			</DialogContent>
 		</Dialog>

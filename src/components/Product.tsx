@@ -7,7 +7,7 @@ import UpdateProductModal from "./UpdateProductModal";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import DeleteConfirmation from "./DeleteConfirmation";
 
-interface IBunData {
+export interface IBunData {
 	id: string;
 	name: string;
 	description: string;
@@ -38,7 +38,7 @@ export default function Product({ data }: { data: IBunData }) {
 						</DeleteConfirmation>
 					</span>
 					<span className="cursor-pointer">
-						<UpdateProductModal>
+						<UpdateProductModal initialData={data}>
 							<Edit className="text-purple-500" size={18} />
 						</UpdateProductModal>
 					</span>
