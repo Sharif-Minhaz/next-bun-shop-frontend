@@ -18,28 +18,43 @@ export default function FilterList({
 	const router = useRouter();
 	const { query } = router;
 	const [selected, setSelected] = useState<number[]>(() => {
-		if (query.category) {
-			return Array.isArray(query.category)
-				? query.category.map((data) => Number(data))
-				: query.category.split(",").map((data) => Number(data));
+		if (query.categories) {
+			return Array.isArray(query.categories)
+				? query.categories.map((data) => Number(data))
+				: query.categories.split(",").map((data) => Number(data));
 		}
-		return [];
+		return [...categories.map((category) => category.id)];
 	});
+
+	const resetCategorySelect = () => {
+		const values = [...categories.map((category) => category.id)];
+		setSelected(values);
+		const updatedQuery = {
+			...query,
+			page: 1,
+			q: "",
+			categories: values.join(","),
+		};
+		router.push({
+			pathname: router.pathname,
+			query: updatedQuery,
+		});
+	};
 
 	const setCategory = (id: number) => {
 		setSelected((prev) => {
 			if (prev.includes(id)) {
 				const values = prev.filter((data) => data !== id);
-				updateQuery(values);
+				updateCategoryQuery(values);
 				return values;
 			}
 			const values = [...prev, id];
-			updateQuery(values);
+			updateCategoryQuery(values);
 			return values;
 		});
 	};
 
-	const updateQuery = (values: number[]) => {
+	const updateCategoryQuery = (values: number[]) => {
 		const updatedQuery = {
 			...query,
 			page: 1,
@@ -55,7 +70,7 @@ export default function FilterList({
 		<div className="flex items-center gap-3 overflow-auto *:rounded-xl">
 			{loading && <span className="inline-block px-4 py-2">Loading...</span>}
 			<Button
-				onClick={() => setSelected([...categories.map((category) => category.id)])}
+				onClick={resetCategorySelect}
 				variant="outline"
 				className={cn(
 					"px-4 py-1 font-medium text-sm transition-colors hover:bg-purple-900 hover:text-primary-foreground",

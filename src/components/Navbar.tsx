@@ -6,19 +6,19 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { toast } from "./ui/use-toast";
 import { Search, UserCog } from "lucide-react";
 import Cart from "./Cart";
 import ProfileButton from "./ProfileButton";
 import { useGlobalContext } from "@/contexts/GlobalContext";
+import { useRouter } from "next/router";
 
 const formSchema = z.object({
-	search: z.string().min(1, {
-		message: "Search must be at least 1 characters.",
-	}),
+	search: z.string(),
 });
 
 export default function Navbar() {
+	const router = useRouter();
+	const { query } = router;
 	const { user, isAdmin } = useGlobalContext();
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -29,14 +29,16 @@ export default function Navbar() {
 	});
 
 	function onSubmit(data: z.infer<typeof formSchema>) {
-		toast({
-			title: "You submitted the following values:",
-			description: (
-				<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-					<code className="text-white">{JSON.stringify(data, null, 2)}</code>
-				</pre>
-			),
+		const updatedQuery = {
+			...query,
+			page: 1,
+			q: data.search,
+		};
+		router.push({
+			pathname: router.pathname,
+			query: updatedQuery,
 		});
+		// form.reset();
 	}
 
 	return (
@@ -54,11 +56,7 @@ export default function Navbar() {
 							render={({ field }) => (
 								<FormItem>
 									<FormControl>
-										<Input
-											type="search"
-											placeholder="Search any type of bun"
-											{...field}
-										/>
+										<Input placeholder="Search any type of bun" {...field} />
 									</FormControl>
 								</FormItem>
 							)}

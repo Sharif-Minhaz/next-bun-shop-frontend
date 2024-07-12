@@ -22,13 +22,17 @@ export const getServerSideProps = (async (context) => {
 	const { query } = context;
 	const currentPage = Number(query?.page) || 1;
 
+	// fetch all category info
 	const resCategory = await fetcher("/category");
 
+	// provide default category info if not available
 	const categories =
 		query?.categories ||
 		resCategory.data?.data.map((data: { id: number }) => data.id).join(",");
 
-	const resProduct = await fetcher(`/product?page=${currentPage}&categories=${categories}`);
+	const resProduct = await fetcher(
+		`/product?q=${query?.q || ""}&page=${currentPage}&categories=${categories}`
+	);
 
 	return {
 		props: {
