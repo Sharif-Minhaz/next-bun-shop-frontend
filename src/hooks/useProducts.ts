@@ -59,7 +59,6 @@ export function useProducts() {
 
 	const updateData = async (productId: string, formData: IProduct) => {
 		setLoading(true);
-		console.log(productId, formData);
 		let res, error;
 		try {
 			res = await fetcher.patch(`/product/update/${productId}`, {

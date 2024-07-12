@@ -4,8 +4,9 @@ import { NextPageWithLayout } from "./_app";
 import Head from "next/head";
 import Product from "@/components/Product";
 import FilterList, { ICategory } from "@/components/FilterList";
-import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType, InferGetStaticPropsType } from "next";
 import { fetcher } from "@/helpers/axios";
+import Pagination from "@/components/Pagination";
 
 export interface IProduct {
 	id: string;
@@ -17,25 +18,40 @@ export interface IProduct {
 	image: string;
 }
 
-export const getStaticProps = (async (context) => {
-	const [resCategory, resProduct] = await Promise.all([
-		fetcher("/category"),
-		fetcher("/product"),
-	]);
+export const getServerSideProps = (async (context) => {
+	const { query } = context;
+	const currentPage = Number(query?.page) || 1;
+
+	const resCategory = await fetcher("/category");
+
+	const categories =
+		query?.categories ||
+		resCategory.data?.data.map((data: { id: number }) => data.id).join(",");
+
+	const resProduct = await fetcher(`/product?page=${currentPage}&categories=${categories}`);
+
 	return {
-		props: { categories: resCategory.data?.data, products: resProduct.data?.data },
+		props: {
+			categories: resCategory.data?.data,
+			products: resProduct.data?.data,
+			count: resProduct.data?.count,
+		},
 	};
-}) satisfies GetStaticProps<{
+}) satisfies GetServerSideProps<{
 	categories: ICategory[];
 	products: IProduct[];
+	count: number;
 }>;
 
-type Props = InferGetStaticPropsType<typeof getStaticProps>;
+type Props = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const Page: NextPageWithLayout<Props> = ({
 	categories,
 	products,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+	count,
+}: InferGetStaticPropsType<typeof getServerSideProps>) => {
+	const totalPages = Math.ceil(count / 8);
+
 	return (
 		<section className="">
 			<Head>
@@ -44,10 +60,19 @@ const Page: NextPageWithLayout<Props> = ({
 			<div className="p-5">
 				<FilterList categories={categories} />
 			</div>
-			<div className="grid md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-4 grid-cols-1 gap-5 pb-5 px-5">
-				{products?.map((bun: IProduct) => (
-					<Product data={bun} key={bun.id} />
-				))}
+			{products.length ? (
+				<div className="grid md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-4 grid-cols-1 gap-5 pb-5 px-5">
+					{products.map((bun: IProduct) => (
+						<Product data={bun} key={bun.id} />
+					))}
+				</div>
+			) : (
+				<div className="text-center py-14 px-2 text-[20px] text-gray-600">
+					No product found. Try a different filter.
+				</div>
+			)}
+			<div className="flex justify-center my-5">
+				<Pagination totalPages={totalPages} />
 			</div>
 		</section>
 	);

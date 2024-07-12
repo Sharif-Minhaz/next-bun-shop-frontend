@@ -1,4 +1,4 @@
-import FilterList from "./FilterList";
+import FilterList, { ICategory } from "./FilterList";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useCategories } from "@/hooks/useCategories";
@@ -31,7 +31,14 @@ const CategoryForm = () => {
 	return (
 		<div className="p-5">
 			<h1 className="mb-3 text-[20px]">Available categories</h1>
-			<FilterList loading={loading} categories={data} />
+			{data.map((category: ICategory) => (
+				<span
+					key={category.id}
+					className="px-4 py-2 border inline-block mr-1 rounded-xl font-medium text-sm"
+				>
+					{category.category_name}
+				</span>
+			))}
 			<h1 className="mt-8 mb-3 text-[20px]">Add a new category</h1>
 			<form onSubmit={handleSubmit} className="w-[300px] flex gap-2">
 				<Input
