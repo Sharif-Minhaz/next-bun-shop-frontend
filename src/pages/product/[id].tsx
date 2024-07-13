@@ -17,6 +17,7 @@ interface IData extends IProduct {
 
 const SingleProductPage: NextPageWithLayout = () => {
 	const router = useRouter();
+	const { id } = router.query;
 	const { fetchSingleProduct } = useProducts();
 	const [loading, setLoading] = useState(true);
 	const [product, setProduct] = useState<IData>();
@@ -24,16 +25,18 @@ const SingleProductPage: NextPageWithLayout = () => {
 	const [price, setPrice] = useState(0);
 
 	useEffect(() => {
-		setLoading(true);
-		async function fetchData() {
-			const data = await fetchSingleProduct(router.query?.id as string);
+		if (id) {
+			fetchData(id as string);
+		}
+		async function fetchData(id: string) {
+			setLoading(true);
+			const data = await fetchSingleProduct(id as string);
 			setProduct(data);
 			setPrice(data?.price);
 			setLoading(false);
 		}
-		fetchData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [router.query?.id]);
+	}, [id]);
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -65,12 +68,13 @@ const SingleProductPage: NextPageWithLayout = () => {
 		return <div className="p-4">Loading...</div>;
 	}
 
-	if (!product)
+	if (!product) {
 		return (
 			<div>
 				<p className="p-4 text-center">Product removed or doesn&apos;t exit.</p>
 			</div>
 		);
+	}
 
 	const inStock = product.stock > 0;
 
