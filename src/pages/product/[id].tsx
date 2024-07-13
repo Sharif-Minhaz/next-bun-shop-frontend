@@ -5,14 +5,65 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Layout from "@/components/Layout";
-import { ReactElement } from "react";
+import { FormEvent, ReactElement, useEffect, useState } from "react";
 import { NextPageWithLayout } from "../_app";
 import { useRouter } from "next/router";
-import products from "@/data/product.json";
+import { useProducts } from "@/hooks/useProducts";
+import { IProduct } from "..";
+
+interface IData extends IProduct {
+	category_name: string;
+}
 
 const SingleProductPage: NextPageWithLayout = () => {
 	const router = useRouter();
-	const product = products.buns.find((data) => data._id === router.query?.id);
+	const { fetchSingleProduct } = useProducts();
+	const [loading, setLoading] = useState(true);
+	const [product, setProduct] = useState<IData>();
+	const [count, setCount] = useState(1);
+	const [price, setPrice] = useState(0);
+
+	useEffect(() => {
+		setLoading(true);
+		async function fetchData() {
+			const data = await fetchSingleProduct(router.query?.id as string);
+			setProduct(data);
+			setPrice(data?.price);
+			setLoading(false);
+		}
+		fetchData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [router.query?.id]);
+
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		alert(count);
+	};
+
+	const increment = () => {
+		setCount((prev) => {
+			if (prev !== product?.stock) {
+				setPrice((product?.price || 1) * (prev + 1));
+				return prev + 1;
+			}
+			return prev;
+		});
+	};
+
+	const decrement = () => {
+		setCount((prev) => {
+			if (prev > 1) {
+				setPrice((product?.price || 1) * (prev - 1));
+				return prev - 1;
+			}
+			return prev;
+		});
+	};
+
+	if (loading) {
+		return <div className="p-4">Loading...</div>;
+	}
 
 	if (!product)
 		return (
@@ -20,6 +71,8 @@ const SingleProductPage: NextPageWithLayout = () => {
 				<p className="p-4 text-center">Product removed or doesn&apos;t exit.</p>
 			</div>
 		);
+
+	const inStock = product.stock > 0;
 
 	return (
 		<div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
@@ -38,8 +91,16 @@ const SingleProductPage: NextPageWithLayout = () => {
 				<div className="grid gap-2">
 					<h1 className="font-bold text-3xl lg:text-4xl">{product.name}</h1>
 					<div className="flex items-center gap-4">
-						<Badge variant="outline">In Stock</Badge>
-						<div className="text-muted-foreground">Category: {product.category}</div>
+						{inStock ? (
+							<Badge variant="outline">In Stock: {product.stock}</Badge>
+						) : (
+							<Badge className="text-red-500" variant="outline">
+								Sold out
+							</Badge>
+						)}
+						<div className="text-muted-foreground">
+							Category: {product.category_name}
+						</div>
 					</div>
 				</div>
 				<div className="grid gap-2">
@@ -54,32 +115,48 @@ const SingleProductPage: NextPageWithLayout = () => {
 						<CardDescription>Ready to checkout?</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<form className="grid gap-4 md:gap-6">
+						<form onSubmit={handleSubmit} className="grid gap-4 md:gap-6">
 							<div>
 								<div className="grid gap-2">
 									<Label htmlFor="quantity" className="text-base">
 										Quantity
 									</Label>
 									<div className="flex items-center gap-2">
-										<Button type="button" variant="outline" size="icon">
+										<Button
+											onClick={decrement}
+											type="button"
+											variant="outline"
+											size="icon"
+										>
 											<MinusIcon className="h-4 w-4" />
 										</Button>
 										<Input
 											id="quantity"
 											type="number"
-											defaultValue={1}
+											onChange={(e) => setCount(Number(e.target.value))}
+											value={count}
+											min={1}
+											max={product.stock}
+											required
 											className="w-16 text-center"
 										/>
-										<Button type="button" variant="outline" size="icon">
+										<Button
+											onClick={increment}
+											type="button"
+											variant="outline"
+											size="icon"
+										>
 											<PlusIcon className="h-4 w-4" />
 										</Button>
 									</div>
 								</div>
 								<div className="text-2xl font-semibold mt-3 border p-3 rounded-md shadow-sm w-fit inline-flex">
-									{product.price} BDT
+									{Number(price).toFixed(2)} BDT
 								</div>
 							</div>
-							<Button size="lg">Pay Now</Button>
+							<Button type="submit" disabled={!inStock} size="lg">
+								{inStock ? "Pay Now" : "Not available right now"}
+							</Button>
 						</form>
 					</CardContent>
 				</Card>

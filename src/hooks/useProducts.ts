@@ -28,7 +28,24 @@ export function useProducts() {
 			if (err instanceof AxiosError) {
 				setError(err.response?.data?.message);
 			} else {
-				setData(err.message);
+				setError(err.message);
+			}
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const fetchSingleProduct = async (id: string) => {
+		setLoading(true);
+		try {
+			const res = await fetcher.get(`/product/${id}`);
+			const data = res.data?.data;
+			return data;
+		} catch (err: any) {
+			if (err instanceof AxiosError) {
+				setError(err.response?.data?.message);
+			} else {
+				setError(err.message);
 			}
 		} finally {
 			setLoading(false);
@@ -108,5 +125,5 @@ export function useProducts() {
 
 	const refetch = () => fetchData();
 
-	return { data, error, loading, refetch, addData, updateData, deleteData };
+	return { data, error, loading, refetch, addData, fetchSingleProduct, updateData, deleteData };
 }
