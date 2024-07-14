@@ -14,6 +14,12 @@ export async function middleware(request: NextRequest) {
 	const { nextUrl } = request;
 	const authCookie = request.cookies.get("auth");
 
+	if (!authCookie) {
+		console.log("Auth cookie is missing", authCookie);
+	} else {
+		console.log("Auth cookie found:", authCookie);
+	}
+
 	const res = await fetcher.get("/auth/current", {
 		headers: {
 			Cookie: `${authCookie?.name}=${authCookie?.value};`,
