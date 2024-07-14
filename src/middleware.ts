@@ -15,7 +15,8 @@ export async function middleware(request: NextRequest) {
 	const authCookie = request.cookies.get("auth");
 
 	if (!authCookie) {
-		console.log("Auth cookie is missing", authCookie);
+		console.log(request.cookies.getAll());
+		console.log("Auth cookie is missing");
 	} else {
 		console.log("Auth cookie found:", authCookie);
 	}
