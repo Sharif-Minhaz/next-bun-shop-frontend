@@ -14,15 +14,11 @@ export async function middleware(request: NextRequest) {
 	const { nextUrl } = request;
 	const authCookie = request.headers.get("cookie");
 
-	// if (!authCookie) {
-	// 	console.log(request.cookies.getAll());
-	// 	console.log("Auth cookie is missing");
-	// } else {
-	// 	console.log("Auth cookie found:", authCookie);
-	// }
+	console.log("Auth Cookie: ", authCookie);
 
 	const res = await fetcher.get("/auth/current", {
 		headers: { "Content-Type": "application/json", cookie: authCookie },
+		withCredentials: true,
 	});
 
 	const isAuthenticated = !!res?.data.data;
