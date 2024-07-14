@@ -7,6 +7,7 @@ import FilterList, { ICategory } from "@/components/FilterList";
 import { GetServerSideProps, InferGetServerSidePropsType, InferGetStaticPropsType } from "next";
 import { fetcher } from "@/helpers/axios";
 import Pagination from "@/components/Pagination";
+import Test from "@/components/Test";
 
 export interface IProduct {
 	id: string;
@@ -78,6 +79,7 @@ const Page: NextPageWithLayout<Props> = ({
 			<div className="flex justify-center my-5">
 				<Pagination totalPages={totalPages} />
 			</div>
+			{/* <Test /> */}
 		</section>
 	);
 };

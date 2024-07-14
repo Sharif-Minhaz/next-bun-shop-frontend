@@ -12,19 +12,17 @@ import { fetcher } from "@/helpers/axios";
 
 export async function middleware(request: NextRequest) {
 	const { nextUrl } = request;
-	const authCookie = request.cookies.get("auth");
+	const authCookie = request.headers.get("cookie");
 
-	if (!authCookie) {
-		console.log(request.cookies.getAll());
-		console.log("Auth cookie is missing");
-	} else {
-		console.log("Auth cookie found:", authCookie);
-	}
+	// if (!authCookie) {
+	// 	console.log(request.cookies.getAll());
+	// 	console.log("Auth cookie is missing");
+	// } else {
+	// 	console.log("Auth cookie found:", authCookie);
+	// }
 
 	const res = await fetcher.get("/auth/current", {
-		headers: {
-			Cookie: `${authCookie?.name}=${authCookie?.value};`,
-		},
+		headers: { "Content-Type": "application/json", cookie: authCookie },
 	});
 
 	const isAuthenticated = !!res?.data.data;
