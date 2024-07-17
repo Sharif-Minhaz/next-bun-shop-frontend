@@ -12,12 +12,12 @@ import { fetcher } from "@/helpers/axios";
 
 export async function middleware(request: NextRequest) {
 	const { nextUrl } = request;
-	const authCookie = request.headers.get("cookie");
+	const cookies = request.headers.get("cookie");
 
-	console.log("Auth Cookie: ", authCookie);
+	console.log("Auth Cookie: ", cookies);
 
 	const res = await fetcher.get("/auth/current", {
-		headers: { "Content-Type": "application/json", cookie: authCookie },
+		headers: { "Content-Type": "application/json", cookie: cookies },
 		withCredentials: true,
 	});
 

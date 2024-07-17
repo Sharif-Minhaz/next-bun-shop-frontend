@@ -1,10 +1,20 @@
 import { fetcher } from "@/helpers/axios";
-import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import {
+	Dispatch,
+	ReactNode,
+	SetStateAction,
+	createContext,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 
 interface GlobalContextProps {
 	isAdmin: () => boolean;
 	user: any;
 	setUser: (user: any) => void;
+	refetchKey: number;
+	setRefetchKey: Dispatch<SetStateAction<number>>;
 }
 
 interface UserInfo {
@@ -25,6 +35,7 @@ export const useGlobalContext = (): GlobalContextProps => {
 
 const GlobalProvider = ({ children }: { children: ReactNode }) => {
 	const [user, setUser] = useState<UserInfo>();
+	const [refetchKey, setRefetchKey] = useState(1);
 
 	useEffect(() => {
 		let ignore = false;
@@ -48,7 +59,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	return (
-		<GlobalContext.Provider value={{ isAdmin, user, setUser }}>
+		<GlobalContext.Provider value={{ isAdmin, user, setUser, refetchKey, setRefetchKey }}>
 			{children}
 		</GlobalContext.Provider>
 	);

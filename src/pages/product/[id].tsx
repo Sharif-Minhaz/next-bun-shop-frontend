@@ -10,15 +10,20 @@ import { NextPageWithLayout } from "../_app";
 import { useRouter } from "next/router";
 import { useProducts } from "@/hooks/useProducts";
 import { IProduct } from "..";
+import { toast } from "@/components/ui/use-toast";
+import { useOrder } from "@/hooks/useOrder";
+import { useGlobalContext } from "@/contexts/GlobalContext";
 
 interface IData extends IProduct {
 	category_name: string;
 }
 
 const SingleProductPage: NextPageWithLayout = () => {
+	const { setRefetchKey } = useGlobalContext();
 	const router = useRouter();
 	const { id } = router.query;
 	const { fetchSingleProduct } = useProducts();
+	const { orderProduct } = useOrder();
 	const [loading, setLoading] = useState(true);
 	const [product, setProduct] = useState<IData>();
 	const [count, setCount] = useState(1);
@@ -38,10 +43,24 @@ const SingleProductPage: NextPageWithLayout = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [id]);
 
-	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		const { error } = await orderProduct(count, id as string);
 
-		alert(count);
+		if (error) {
+			return toast({
+				variant: "destructive",
+				title: "Order failed",
+				description: error || "Something went wrong",
+			});
+		}
+
+		toast({
+			title: "Order successful",
+			description: "Waiting for admin verification. ",
+		});
+		setRefetchKey(Date.now()); // trigger the order data refetching
+		router.push("/");
 	};
 
 	const increment = () => {

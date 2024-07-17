@@ -7,11 +7,51 @@ import {
 	TableBody,
 	TableCell,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import data from "@/data/orders.json";
+import { IOrder, useOrder } from "@/hooks/useOrder";
+import { toast } from "./ui/use-toast";
 
 export default function OrderList() {
+	const { data, cancelOrder, acceptOrder, refetch } = useOrder();
+
+	const handleCancelOrder = async (id: string, productId: string) => {
+		const { error } = await cancelOrder(id, productId);
+
+		if (error) {
+			return toast({
+				variant: "destructive",
+				title: "Order cancelled",
+				description: error || "Something went wrong",
+			});
+		}
+
+		refetch(); // refetching for updated data
+
+		toast({
+			title: "Order cancelation successful",
+			description: "Updating information... ",
+		});
+	};
+
+	const handleAcceptOrder = async (id: string) => {
+		const { error } = await acceptOrder(id);
+
+		if (error) {
+			return toast({
+				variant: "destructive",
+				title: "Order cancelled",
+				description: error || "Something went wrong",
+			});
+		}
+
+		refetch(); // refetching for updated data
+
+		toast({
+			title: "Order accepted successfully",
+			description: "Updating information... ",
+		});
+	};
+
 	return (
 		<Card>
 			<CardHeader className="px-7">
@@ -28,7 +68,6 @@ export default function OrderList() {
 							<TableHead>Count</TableHead>
 							<TableHead>Ordered At</TableHead>
 							<TableHead>Total Price</TableHead>
-							<TableHead>Paid</TableHead>
 							<TableHead>Status</TableHead>
 							<TableHead>Username</TableHead>
 							<TableHead>Product Name</TableHead>
@@ -36,26 +75,44 @@ export default function OrderList() {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{data.orders.map((row) => (
-							<TableRow key={row._id}>
-								<TableCell>{row._id}</TableCell>
+						{data.map((row: IOrder) => (
+							<TableRow key={row.id}>
+								<TableCell>{row.id}</TableCell>
 								<TableCell>{row.userid}</TableCell>
 								<TableCell>{row.productid}</TableCell>
 								<TableCell>{row.count}</TableCell>
-								<TableCell>{row.orderat}</TableCell>
+								<TableCell>{new Date(row.orderat).toUTCString()}</TableCell>
 								<TableCell>{row.totalprice}</TableCell>
-								<TableCell>{row.paid}</TableCell>
 								<TableCell>
-									<Badge variant="secondary">{row.status}</Badge>
+									<span
+										className={`inline-block px-3 py-1 rounded-full text-sm ${
+											row.status === "pending"
+												? "bg-yellow-300"
+												: row.status === "accepted"
+												? "bg-green-500 text-white"
+												: "bg-red-500 text-white"
+										}`}
+									>
+										{row.status}
+									</span>
 								</TableCell>
 								<TableCell>{row.username}</TableCell>
 								<TableCell>{row.productname}</TableCell>
 								<TableCell>
 									<div className="flex gap-2">
-										<Button variant="outline" size="sm">
+										<Button
+											onClick={() => handleAcceptOrder(row.id)}
+											variant="outline"
+											size="sm"
+										>
 											Accept
 										</Button>
-										<Button variant="destructive" size="sm" color="red">
+										<Button
+											onClick={() => handleCancelOrder(row.id, row.productid)}
+											variant="destructive"
+											size="sm"
+											color="red"
+										>
 											Decline
 										</Button>
 									</div>

@@ -1,28 +1,33 @@
 import { fetcher } from "@/helpers/axios";
-import { useEdgeStore } from "@/lib/edgestore";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 
-export interface IProduct {
-	id?: string;
-	name: string; //
-	description: string; //
+export interface IOrder {
+	id: string;
+	userid: string;
+	productid: string;
+	count: number;
+	orderat: Date;
+	totalprice: number;
+	status: string;
+	image: string;
+	username: string;
+	productname: string;
+	email: string;
 	price: number;
 	stock: number;
-	category: string; // convert to number rename to category_name
-	image: string;
+	category_name: string;
 }
 
-export function useProducts() {
-	const [data, setData] = useState([]);
+export function useOrder() {
+	const [data, setData] = useState<IOrder[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
-	const { edgestore } = useEdgeStore();
 
 	const fetchData = async () => {
 		setLoading(true);
 		try {
-			const res = await fetcher.get("/product");
+			const res = await fetcher.get("/order");
 			setData(res.data?.data);
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
@@ -35,53 +40,33 @@ export function useProducts() {
 		}
 	};
 
-	const fetchSingleProduct = async (id: string) => {
+	const getUseOrders = async () => {
 		setLoading(true);
+		let data, err, loading;
+		loading = true;
 		try {
-			const res = await fetcher.get(`/product/${id}`);
-			const data = res.data?.data;
-			return data;
+			const res = await fetcher.get("/order/user");
+			data = res.data?.data;
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
-				setError(err.response?.data?.message);
+				err = err.response?.data?.message;
 			} else {
-				setError(err.message);
+				err = err.message;
 			}
 		} finally {
 			setLoading(false);
-		}
-	};
-
-	const addData = async (formData: IProduct) => {
-		setLoading(true);
-		let res, error;
-		try {
-			res = await fetcher.post("/product/add", {
-				...formData,
-				category: Number(formData.category),
-			});
-		} catch (err: any) {
-			if (err instanceof AxiosError) {
-				setError(err.response?.data?.message);
-				error = err.response?.data?.message;
-			} else {
-				setData(err.message);
-			}
-		} finally {
-			setLoading(false);
+			loading = false;
 		}
 
-		return { res, error };
+		return { data, err, loading };
 	};
 
-	const updateData = async (productId: string, formData: IProduct) => {
+	const orderProduct = async (count: number, productId: string) => {
 		setLoading(true);
 		let res, error;
+
 		try {
-			res = await fetcher.patch(`/product/update/${productId}`, {
-				...formData,
-				category: Number(formData.category),
-			});
+			res = await fetcher.post(`/order/add/${productId}`, { count });
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
 				setError(err.response?.data?.message);
@@ -96,15 +81,30 @@ export function useProducts() {
 		return { res, error };
 	};
 
-	const deleteData = async (id: string) => {
+	const cancelOrder = async (orderId: string, productId: string) => {
 		setLoading(true);
 		let res, error;
-
 		try {
-			res = await fetcher.delete(`/product/${id}`);
-			await edgestore.publicFiles.delete({
-				url: res.data?.data?.image,
-			});
+			res = await fetcher.patch(`/order/cancel/${orderId}/${productId}`);
+		} catch (err: any) {
+			if (err instanceof AxiosError) {
+				setError(err.response?.data?.message);
+				error = err.response?.data?.message;
+			} else {
+				setData(err.message);
+			}
+		} finally {
+			setLoading(false);
+		}
+
+		return { res, error };
+	};
+
+	const acceptOrder = async (orderId: string) => {
+		setLoading(true);
+		let res, error;
+		try {
+			res = await fetcher.patch(`/order/accept/${orderId}`);
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
 				setError(err.response?.data?.message);
@@ -130,9 +130,9 @@ export function useProducts() {
 		error,
 		loading,
 		refetch,
-		addData,
-		fetchSingleProduct,
-		updateData,
-		deleteData,
+		orderProduct,
+		acceptOrder,
+		cancelOrder,
+		getUseOrders,
 	};
 }
