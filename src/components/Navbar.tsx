@@ -11,6 +11,8 @@ import Cart from "./Cart";
 import ProfileButton from "./ProfileButton";
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { useRouter } from "next/router";
+import { IOrder, useOrder } from "@/hooks/useOrder";
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
 	search: z.string(),
@@ -19,7 +21,24 @@ const formSchema = z.object({
 export default function Navbar() {
 	const router = useRouter();
 	const { query } = router;
-	const { user, isAdmin } = useGlobalContext();
+	const { user, isAdmin, refetchKey } = useGlobalContext();
+	const { getUseOrders } = useOrder();
+	const [data, setData] = useState<IOrder[]>([]);
+	const [error, setError] = useState("");
+
+	useEffect(() => {
+		async function fetchData() {
+			try {
+				const { data } = await getUseOrders();
+				setData(data);
+			} catch (error: any) {
+				setError(error.message);
+			}
+		}
+
+		fetchData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [refetchKey]);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -75,7 +94,14 @@ export default function Navbar() {
 								<UserCog className="hover:text-purple-700 transition-colors" />
 							</Link>
 						)}
-						<Cart />
+						<div className="relative">
+							<Cart error={error} data={data} />
+							{data.length > 0 && (
+								<span className="absolute text-white text-[10px] -top-1 -right-2 inline-flex items-center justify-center text-center w-4 h-4 rounded-full bg-primary">
+									{data.length}
+								</span>
+							)}
+						</div>
 						<ProfileButton user={user}>
 							<Image
 								width={40}

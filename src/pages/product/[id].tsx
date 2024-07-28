@@ -45,7 +45,7 @@ const SingleProductPage: NextPageWithLayout = () => {
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const { error } = await orderProduct(count, id as string);
+		const { res, error } = await orderProduct(count, id as string);
 
 		if (error) {
 			return toast({
@@ -54,6 +54,8 @@ const SingleProductPage: NextPageWithLayout = () => {
 				description: error || "Something went wrong",
 			});
 		}
+		// show the gateway url
+		window.location.replace(res?.data.url);
 
 		toast({
 			title: "Order successful",

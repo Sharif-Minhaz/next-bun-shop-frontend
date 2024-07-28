@@ -1,30 +1,9 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ShoppingCart } from "lucide-react";
 import CartItem from "./CartItem";
-import { IOrder, useOrder } from "@/hooks/useOrder";
-import { useEffect, useState } from "react";
-import { useGlobalContext } from "@/contexts/GlobalContext";
+import { IOrder } from "@/hooks/useOrder";
 
-const Cart = () => {
-	const { refetchKey } = useGlobalContext();
-	const { getUseOrders } = useOrder();
-	const [data, setData] = useState<IOrder[]>([]);
-	const [error, setError] = useState("");
-
-	useEffect(() => {
-		async function fetchData() {
-			try {
-				const { data } = await getUseOrders();
-				setData(data);
-			} catch (error: any) {
-				setError(error.message);
-			}
-		}
-
-		fetchData();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [refetchKey]);
-
+const Cart = ({ error, data }: { error: string; data: IOrder[] }) => {
 	return (
 		<Sheet>
 			<SheetTrigger>

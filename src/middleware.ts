@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
 	const { nextUrl } = request;
 	const cookies = request.headers.get("cookie");
 
-	console.log("Auth Cookie: ", cookies);
+	// console.log("Auth Cookie: ", cookies);
 
 	const res = await fetcher.get("/auth/current", {
 		headers: { "Content-Type": "application/json", cookie: cookies },
