@@ -1,5 +1,6 @@
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { fetcher } from "@/helpers/axios";
+import { setEncryptedCookie } from "@/lib/cookieStore";
 import { AxiosError } from "axios";
 import { useState } from "react";
 
@@ -19,6 +20,8 @@ export function useLogin() {
 		try {
 			res = await fetcher.post("/auth/login", formData);
 			setUser(res.data?.data);
+			// set the auth cookie in the browser for 1 day
+			setEncryptedCookie("auth", res.data?.token, 1);
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
 				error = err.response?.data?.message;

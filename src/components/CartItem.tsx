@@ -49,6 +49,9 @@ export default function CartItem({ item }: { item: IItem }) {
 						{item.status}
 					</Badge>
 				</div>
+				<span className="text-sm text-muted-foreground">
+					{new Date(item.orderat).toLocaleString()}
+				</span>
 			</div>
 		</Card>
 	);

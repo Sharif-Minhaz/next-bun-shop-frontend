@@ -56,11 +56,7 @@ export default function RegisterPage() {
 			});
 		}
 
-		toast({
-			title: "Registration successful",
-			description: "You can have access to the all features",
-		});
-		router.push("/");
+		router.push("/auth/login");
 	}
 
 	return (

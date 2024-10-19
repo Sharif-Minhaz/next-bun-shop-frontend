@@ -8,6 +8,7 @@ import {
 	useEffect,
 	useState,
 } from "react";
+import { getDecryptedCookie } from "@/lib/cookieStore";
 
 interface GlobalContextProps {
 	isAdmin: () => boolean;
@@ -40,8 +41,15 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
 	useEffect(() => {
 		let ignore = false;
 		async function currentUser() {
-			const res = await fetcher.get("/auth/current");
-			fetcher.get("https://payment-gateway-sslcommerz-api.onrender.com");
+			const authCookieDecrypted = getDecryptedCookie("auth");
+			const res = await fetcher.get(`/auth/current?token=${authCookieDecrypted}`, {
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${authCookieDecrypted}`,
+				},
+			});
+
+			fetch("https://payment-gateway-sslcommerz-api.onrender.com");
 
 			if (!ignore) {
 				setUser(res?.data?.data || undefined);

@@ -9,17 +9,26 @@ import {
 	PROTECTED_SUB_ROUTES,
 } from "@/lib/routes";
 import { fetcher } from "@/helpers/axios";
+import { decryptCookie } from "./lib/cookieStore";
 
 export async function middleware(request: NextRequest) {
 	const { nextUrl } = request;
-	const cookies = request.headers.get("cookie");
+	const authCookie = request.cookies.get("auth")?.value;
 
-	// console.log("Auth Cookie: ", cookies);
+	const authCookieDecrypted = decryptCookie(authCookie);
+	// i will verify the cookie here.
 
-	const res = await fetcher.get("/auth/current", {
-		headers: { "Content-Type": "application/json", cookie: cookies },
-		withCredentials: true,
+	console.log("authCookieDecrypted: ", authCookieDecrypted);
+
+	// i have to modify the cookie for this function, send the cookie in authorization header only
+	const res = await fetcher.get(`/auth/current?token=${authCookieDecrypted}`, {
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${authCookieDecrypted}`,
+		},
 	});
+
+	console.log("res: ", res?.data);
 
 	const isAuthenticated = !!res?.data.data;
 	const isAdmin = res?.data?.data?.role === "admin";

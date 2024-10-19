@@ -1,9 +1,8 @@
 import { useGlobalContext } from "@/contexts/GlobalContext";
-import { fetcher } from "@/helpers/axios";
 import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
-
+import Cookies from "js-cookie";
 export function useLogout() {
 	const router = useRouter();
 	const { setUser } = useGlobalContext();
@@ -11,10 +10,9 @@ export function useLogout() {
 
 	const doLogout = async () => {
 		setIsLoading(true);
-		let error = "",
-			res;
+		let error = "";
 		try {
-			res = await fetcher.post("/auth/logout");
+			Cookies.remove("auth"); // remove the auth cookie from the browser
 			setUser(undefined);
 			router.push("/");
 		} catch (err: any) {

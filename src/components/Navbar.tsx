@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
+import { Form, FormControl, FormField, FormItem } from "./ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -96,7 +96,7 @@ export default function Navbar() {
 						)}
 						<div className="relative">
 							<Cart error={error} data={data} />
-							{data.length > 0 && (
+							{data?.length > 0 && (
 								<span className="absolute text-white text-[10px] -top-1 -right-2 inline-flex items-center justify-center text-center w-4 h-4 rounded-full bg-primary">
 									{data.length}
 								</span>
