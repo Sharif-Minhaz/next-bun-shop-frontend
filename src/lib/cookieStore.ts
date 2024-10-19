@@ -13,7 +13,6 @@ const setEncryptedCookie = (name: string, value: string, days: number) => {
 
 const getDecryptedCookie = (name: string) => {
 	const encryptedValue = Cookies.get(name);
-	console.log("encryptedValue: ", encryptedValue);
 	if (!encryptedValue) return null;
 
 	const cookieKey = process.env.NEXT_PUBLIC_COOKIE_KEY;

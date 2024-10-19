@@ -3,7 +3,6 @@ import { fetcher } from "@/helpers/axios";
 export default function Test() {
 	async function handleCurrentUser() {
 		const currentUser = await fetcher.get("/auth/current");
-		console.log(currentUser);
 	}
 	return (
 		<div>

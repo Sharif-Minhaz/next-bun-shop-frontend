@@ -16,19 +16,13 @@ export async function middleware(request: NextRequest) {
 	const authCookie = request.cookies.get("auth")?.value;
 
 	const authCookieDecrypted = decryptCookie(authCookie);
-	// i will verify the cookie here.
 
-	console.log("authCookieDecrypted: ", authCookieDecrypted);
-
-	// i have to modify the cookie for this function, send the cookie in authorization header only
 	const res = await fetcher.get(`/auth/current?token=${authCookieDecrypted}`, {
 		headers: {
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${authCookieDecrypted}`,
 		},
 	});
-
-	console.log("res: ", res?.data);
 
 	const isAuthenticated = !!res?.data.data;
 	const isAdmin = res?.data?.data?.role === "admin";
