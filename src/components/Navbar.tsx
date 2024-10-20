@@ -64,7 +64,10 @@ export default function Navbar() {
 		<nav className="flex justify-between px-5 py-3 z-30 bg-purple-100 fixed top-0 w-full">
 			<div className="flex gap-3 items-center">
 				<Image src="/brand.png" alt="bun-shop" height={40} width={40} />
-				<Link href="/" className="font-semibold text-2xl md:inline-flex hidden">
+				<Link
+					href="/"
+					className="font-semibold font-[cursive] text-2xl md:inline-flex hidden"
+				>
 					Bun Shop
 				</Link>
 				<Form {...form}>

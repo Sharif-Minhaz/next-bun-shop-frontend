@@ -27,7 +27,10 @@ export default function CartItem({ item }: { item: IItem }) {
 				className="rounded-md h-[100px] object-cover"
 			/>
 			<div className="flex-1 grid gap-1">
-				<h3 className="text-lg font-medium text-nowrap text-ellipsis">
+				<h3
+					className="text-lg font-medium text-nowrap text-ellipsis overflow-hidden"
+					title={item.productname}
+				>
 					{item.productname}
 				</h3>
 				<div className="flex items-center gap-2 text-sm text-muted-foreground">

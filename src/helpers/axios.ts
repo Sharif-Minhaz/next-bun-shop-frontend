@@ -5,8 +5,10 @@ const createFetcher = () => {
 	const token = getDecryptedCookie("auth");
 
 	return axios.create({
-		// baseURL: "http://localhost:5000/api/v1",
-		baseURL: "https://next-bun-shop-backend.onrender.com/api/v1",
+		baseURL:
+			process.env.NODE_ENV === "development"
+				? "http://localhost:5000/api/v1"
+				: "https://next-bun-shop-backend.onrender.com/api/v1",
 		withCredentials: true,
 		headers: {
 			"Content-Type": "application/json",

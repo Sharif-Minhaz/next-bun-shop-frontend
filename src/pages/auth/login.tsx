@@ -49,6 +49,7 @@ export default function LoginPage() {
 				description: "You can have access to the all features",
 			});
 			router.push("/");
+			router.reload();
 		} else if (error) {
 			toast({
 				variant: "destructive",
