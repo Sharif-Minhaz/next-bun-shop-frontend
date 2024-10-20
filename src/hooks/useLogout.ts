@@ -19,6 +19,7 @@ export function useLogout() {
 			setUser(undefined);
 			setRefetchKey(Date.now());
 			router.push("/auth/login");
+			router.reload();
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
 				error = err.response?.data?.message;
