@@ -92,7 +92,7 @@ const SingleProductPage: NextPageWithLayout = () => {
 	if (!product) {
 		return (
 			<div>
-				<p className="p-4 text-center">Product removed or doesn&apos;t exit.</p>
+				<p className="p-4 text-center">Product removed or doesn&apos;t exist.</p>
 			</div>
 		);
 	}

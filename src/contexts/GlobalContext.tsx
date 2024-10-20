@@ -1,4 +1,4 @@
-import { fetcher } from "@/helpers/axios";
+import { fetcher, updateFetcherAuth } from "@/helpers/axios";
 import {
 	Dispatch,
 	ReactNode,
@@ -41,6 +41,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
 	useEffect(() => {
 		let ignore = false;
 		async function currentUser() {
+			updateFetcherAuth();
 			const authCookieDecrypted = getDecryptedCookie("auth");
 			const res = await fetcher.get(`/auth/current?token=${authCookieDecrypted}`, {
 				headers: {
@@ -49,19 +50,23 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
 				},
 			});
 
-			fetch("https://payment-gateway-sslcommerz-api.onrender.com");
+			fetch("https://payment-gateway-sslcommerz-api.onrender.com", {
+				method: "GET",
+			})
+				.then((res) => res.json())
+				.then((data) => console.info(data.message))
+				.catch((err) => console.error(err));
 
 			if (!ignore) {
 				setUser(res?.data?.data || undefined);
 			}
 		}
-
 		currentUser();
 
 		return () => {
 			ignore = true;
 		};
-	}, []);
+	}, [refetchKey]);
 
 	const isAdmin = () => {
 		return user?.role === "admin";

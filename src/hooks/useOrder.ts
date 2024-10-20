@@ -30,6 +30,7 @@ export function useOrder() {
 			const res = await fetcher.get("/order");
 			setData(res.data?.data);
 		} catch (err: any) {
+			console.error(err.message);
 			if (err instanceof AxiosError) {
 				setError(err.response?.data?.message);
 			} else {

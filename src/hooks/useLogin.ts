@@ -10,7 +10,7 @@ interface Info {
 }
 
 export function useLogin() {
-	const { setUser } = useGlobalContext();
+	const { setUser, setRefetchKey } = useGlobalContext();
 	const [isLoading, setIsLoading] = useState(false);
 
 	const doLogin = async (formData: Info) => {
@@ -21,6 +21,7 @@ export function useLogin() {
 			res = await fetcher.post("/auth/login", formData);
 			setUser(res.data?.data);
 			// set the auth cookie in the browser for 1 day
+			setRefetchKey(Date.now());
 			setEncryptedCookie("auth", res.data?.token, 1);
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
