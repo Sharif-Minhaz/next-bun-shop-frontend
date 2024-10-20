@@ -1,29 +1,40 @@
 # Next Bun shop
 
-#### Next bun shop is a full-stack bun 🍞 selling platform with online payment system (sslcommerz) integrated for order management.
+#### Next Bun Shop is a full-stack bun 🍞 selling platform with online payment system (sslcommerz) integrated for order management.
 
 ---
 
-<img src="./public/screenshots/home.webp" />
-<div style="display: flex; gap: 10px;">
-    <img style="width: 49%" src="./public/screenshots/prod-1.webp" />
-    <img style="width: 50%" src="./public/screenshots/checkout.webp" />
+***Warning***: The backend and payment system are deployed in [onrender](https://render.com) free tier. So, the project may open late (50s or more for the first time when the project load).
+
+
+---
+
+<img src="./public/screenshots/home.webp" alt="Home" style="width: 100%; max-width: 800px; display: block; margin: 0 auto;" />
+
+<div style="display: flex; justify-content: space-between; margin-top: 20px;">
+    <img src="./public/screenshots/prod-1.webp" alt="Product 1" style="width: 49%;" />
+    <img src="./public/screenshots/checkout.webp" alt="Checkout" style="width: 49%;" />
 </div>
 
 ---
 
-<div style="display: flex; gap: 10px; margin-top: 12px">
-    <img style="width: 32.5%" src="./public/screenshots/cart.webp" />
-    <img style="width: 32.5%" src="./public/screenshots/edit-product.webp" />
-    <img style="width: 32.5%" src="./public/screenshots/delete-prod.webp" />
+<div style="display: flex; justify-content: space-between; margin-top: 20px;">
+    <img src="./public/screenshots/cart.webp" alt="Cart" style="width: 49%;" />
+    <img src="./public/screenshots/edit-product.webp" alt="Edit Product" style="width: 49%;" />
 </div>
 
 ---
 
-<div style="display: flex; gap: 10px; margin-top: 12px">
-    <img style="width: 32.5%" src="./public/screenshots/dashboard-1.webp" />
-    <img style="width: 32.5%" src="./public/screenshots/dashboard-2.webp" />
-    <img style="width: 32.5%" src="./public/screenshots/dashboard-3.webp" />
+<div style="display: flex; justify-content: space-between; margin-top: 20px;">
+    <img src="./public/screenshots/delete-prod.webp" alt="Delete Product" style="width: 49%;" />
+    <img src="./public/screenshots/dashboard-3.webp" alt="Dashboard 3" style="width: 49%;" />
+</div>
+
+---
+
+<div style="display: flex; justify-content: space-between; margin-top: 20px;">
+    <img src="./public/screenshots/dashboard-2.webp" alt="Dashboard 2" style="width: 49%;" />
+    <img src="./public/screenshots/dashboard-1.webp" alt="Dashboard 1" style="width: 49%;" />
 </div>
 
 ---
