@@ -1,6 +1,6 @@
 import { useGlobalContext } from "@/contexts/GlobalContext";
 import { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { updateFetcherAuth } from "@/helpers/axios";
@@ -18,7 +18,7 @@ export function useLogout() {
 			updateFetcherAuth(); // Update the fetcher to remove the auth token
 			setUser(undefined);
 			setRefetchKey(Date.now());
-			router.push("/");
+			router.push("/auth/login");
 		} catch (err: any) {
 			if (err instanceof AxiosError) {
 				error = err.response?.data?.message;
